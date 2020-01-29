@@ -188,7 +188,40 @@ for item in final_output:
 # removing newline from end of the list
 if final_output_pre[-1] == '\n':
 	del final_output_pre[-1]
-
+'''
+#modification in "final_output_pre"
+    
+final_output_list=[]
+for i in final_output_pre:
+    mtc=re.search(r'B-(.*)',i)
+    mtc1=re.search(r'I-(.*)',i)
+    if mtc!=None and mtc1==None:
+        
+        if mtc.group(0)=="B-Case" :
+            l1=i.replace(mtc.group(0),"B-casename")
+            final_output_list.append(l1)
+        
+        
+        elif mtc.group(0)=="B-casename"  :                     
+            final_output_list.append(i)    
+        
+        elif mtc.group(0)!="B-Case" and mtc.group(0)!="B-casename" :                       
+            l1=i.replace(mtc.group(0),"other")
+            final_output_list.append(l1)
+    
+    if mtc==None and mtc1!=None:
+         if mtc1.group(0)=="I-Case" :                        
+            l1=i.replace(mtc1.group(0),"I-casename")
+            final_output_list.append(l1)  
+         elif  mtc1.group(0)=="I-casename":                        
+            final_output_list.append(i)          
+            
+         elif mtc1.group(0)!="I-Case"and  mtc1.group(0)!="I-casename":                       
+            l1=i.replace(mtc1.group(0),"other")
+            final_output_list.append(l1)
+    if mtc==None and mtc1==None:
+       final_output_list.append(i)
+'''
 #writing to the file
 
 f.write(''.join(final_output_pre))
