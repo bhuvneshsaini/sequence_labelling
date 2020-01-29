@@ -111,8 +111,9 @@ def createMatrices(sentences, word2Idx, label2Idx, case2Idx,char2Idx):
                 unknownWordCount += 1
             charIdx = []
             for x in char:
-                charIdx.append(char2Idx[x])
-            #Get the label and map to int            
+                if "\ufeff"  not in x and "\n"not in x :
+                    charIdx.append(char2Idx[x])
+#Get the label and map to int            
             wordIndices.append(wordIdx)
             caseIndices.append(getCasing(word, case2Idx))
             charIndices.append(charIdx)
