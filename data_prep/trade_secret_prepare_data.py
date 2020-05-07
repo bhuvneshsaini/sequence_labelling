@@ -1,11 +1,16 @@
 import os
 import re
-import nltk.data
-
-
-file_path=r"C:\Users\PXM\Desktop\Implement_official_project\Entity_Recognition_WK-PLI\data\Sequence_label\new_data\test" # Please change the name of the directory here if needed
+import nltk
+from before_prediction_addon_code import replace_entities
+file_path=r"D:\WK_Entity\data\Sequence_label\test" # Please change the name of the directory here if needed
 file_name=[filename for filename in os.listdir(file_path)] # Iterating over the list of the directory available in file path
 print(len(file_name))
+
+## making dictionary of special entities
+with open(r'entities.txt',encoding="utf8") as fin:    
+     rows = ( line.split('\t') for line in fin )
+     dict_for_readable = { row[0]:row[1:] for row in rows }
+     
 
 # This list contains text with tagged element inside it
 data=[]
@@ -21,16 +26,20 @@ def split_unicode(item):
 
 def tag_line(filename):
 	next_line_index_value = None
-	with open(filename,'r') as f:
+	with open(filename,'r',encoding="utf-8") as f:
 		contents=f.read()
-		seperated_text_data = nltk.sent_tokenize(contents);
+		seperated_text_data = nltk.sent_tokenize(contents)
 
 	for index, text in enumerate(seperated_text_data):
 
-	    start=re.search(r'<(.*)>', text)
-
+	    start=re.search(r'<(.*)>', text);print(text)
+        
 	    if start!=None or next_line_index_value == index:
-	    	data.append(text)
+	    	
+	     replace_entity=replace_entities(text,dict_for_readable)
+	     data.append(replace_entity)
+         
+##	    	data.append(text)
 
 	    if start!=None:
 	    	next_line_index_value = index+1
@@ -40,7 +49,7 @@ for item in file_name:
     
     file_fullname = os.path.join(file_path, item)
     tag_line(file_fullname)
-    print(file_fullname)
+    #print(file_fullname)
     #break
 
 
@@ -97,6 +106,7 @@ for index, item in enumerate(data):
 			if match is None and match1 is None and inside is True:
 				# Checking first item inside the tagged text and suffix with "B-TAG_NAME" otherwise "I_TAG_NAME"
 				if FIRST_ITEM is True:
+                    
 					txt = word+" "+"B-"+mtc_group
 					final_output.append(txt)
 					FIRST_ITEM = False
@@ -115,12 +125,12 @@ for index, item in enumerate(data):
 
 final_output = final_output[1:] #Removing extra newline from top of the tokenize text
 
-f = open("trade_test_data.txt", "a+") #Here you can change or edit the name of the file
+f = open("training_data/test.txt", "a+",encoding="utf-8") ##Here you can change or edit the name of the file
 
 
 
 for index, item in enumerate(final_output):
-	print("item.....",item)
+	#print("item.....",item)
 	if index == 0:
 		continue
 	if index == len(final_output)-2:
@@ -188,7 +198,7 @@ for item in final_output:
 # removing newline from end of the list
 if final_output_pre[-1] == '\n':
 	del final_output_pre[-1]
-'''
+
 #modification in "final_output_pre"
     
 final_output_list=[]
@@ -221,9 +231,8 @@ for i in final_output_pre:
             final_output_list.append(l1)
     if mtc==None and mtc1==None:
        final_output_list.append(i)
-'''
+      
 #writing to the file
-
-f.write(''.join(final_output_pre))
+f.write(''.join(final_output_list))
 
 f.close()
