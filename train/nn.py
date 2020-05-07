@@ -37,9 +37,9 @@ def tag_dataset(dataset):
 # devSentences = readfile("data/WkAnno_output_dev_data.txt")
 # testSentences = readfile("data/WkAnno_output_test_data.txt")
 
-trainSentences = readfile("data/trade_train_data.txt")
-devSentences = readfile("data/trade_dev_data.txt")
-testSentences = readfile("data/trade_test_data.txt")
+trainSentences = readfile("training_data/train.txt")
+devSentences = readfile("training_data/dev.txt")
+testSentences = readfile("training_data/test.txt")
 
 
 trainSentences = addCharInformatioin(trainSentences)
@@ -69,7 +69,7 @@ caseEmbeddings = np.identity(len(case2Idx), dtype='float32')
 word2Idx = {}
 wordEmbeddings = []
 
-fEmbeddings = open("embeddings/glove.6B.100d.txt", encoding="utf-8")
+fEmbeddings = open("embedding/glove.6B.100d.txt", encoding="utf-8")
 
 for line in fEmbeddings:
     split = line.strip().split(" ")
@@ -92,7 +92,7 @@ for line in fEmbeddings:
 wordEmbeddings = np.array(wordEmbeddings)
 
 char2Idx = {"PADDING":0, "UNKNOWN":1}
-for c in " 0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.,-_()[]{}!?:;#'\"/\\%$`&=*+@^~|":
+for c in " 0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.,<>-_()[]{}!?:;#'\"/\\%$`&=*+@^~|":
     char2Idx[c] = len(char2Idx)
 
 train_set = padding(createMatrices(trainSentences,word2Idx,  label2Idx, case2Idx,char2Idx))
@@ -100,8 +100,8 @@ dev_set = padding(createMatrices(devSentences,word2Idx, label2Idx, case2Idx,char
 test_set = padding(createMatrices(testSentences, word2Idx, label2Idx, case2Idx,char2Idx))
 
 idx2Label = {v: k for k, v in label2Idx.items()}
-np.save("models/idx2Label.npy",idx2Label)
-np.save("models/word2Idx.npy",word2Idx)
+np.save("model_tensorflow_1.5/idx2Label.npy",idx2Label)
+np.save("model_tensorflow_1.5/word2Idx.npy",word2Idx)
 
 train_batch,train_batch_len = createBatches(train_set)
 dev_batch,dev_batch_len = createBatches(dev_set)
@@ -138,8 +138,9 @@ for epoch in range(epochs):
     a.update(i+1)
     print(' ')
 
-model.save("models/model.h5")
-model.save("E:/Python_Projects/LSTM/Named-Entity-Recognition-with-Bidirectional-LSTM-CNNs/models/model_seq.h5")
+model.save("model_tensorflow_1.5/model.h5")
+model.save_weights('model_weights_tensorflow_1.5/model_weights.h5')
+#model.save("E:/Python_Projects/LSTM/Named-Entity-Recognition-with-Bidirectional-LSTM-CNNs/models/model_seq.h5")
 
 #   Performance on dev dataset        
 predLabels, correctLabels = tag_dataset(dev_batch)        
